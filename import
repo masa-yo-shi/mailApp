@@ -1,0 +1,41 @@
+import json
+from typing import Literal
+
+from pydantic import BaseModel
+from openai import OpenAI
+
+
+class ClassifiedTitle(BaseModel):
+    category: Literal["バイト", "図書館", "その他"]
+    id: int
+
+
+class ClassificationResult(BaseModel):
+    items: list[ClassifiedTitle]
+
+client = OpenAI()
+
+low_data = [("バイト募集！", 1), ("図書館の新しい本が入荷しました", 2), ("今日の天気は晴れです", 3)]
+input_text = json.dumps(
+    [{"title": title, "id": item_id} for title, item_id in low_data],
+    ensure_ascii=False,
+)
+
+response = client.responses.parse(
+    model="gpt-4.1-mini",
+    instructions="""
+あなたはタイトル分類器です。
+次のカテゴリのどれか1つだけを返してください:
+バイト, 図書館, その他
+
+入力形式：[{'title': '...', 'id': 1}, ...]
+出力形式：{"items": [{"category": "...", "id": 1}, ...]}
+""",
+    input=input_text,
+    text_format=ClassificationResult,
+)
+
+classified_data = [(item.category, item.id) for item in response.output_parsed.items]
+print(classified_data)
+
+print(classified_data)

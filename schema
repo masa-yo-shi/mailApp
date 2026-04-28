@@ -1,0 +1,11 @@
+エンドポイントを作成
+HTTPメソッド,URL ,機能
+GET, /mails, メール一覧参照
+GET, /mails/{mail_class}, メール一件参照
+
+スキーマの作成
+スキーマ、フィールド、値、必須、説明、値の例、バリデーション
+MailSchema、mail_id、int、必須、ID、123、なし
+ResponseSchema、message、str、必須、API操作の結果、メールの表示に成功、なし
+
+
