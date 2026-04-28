@@ -5,7 +5,7 @@ from typing import Literal
 from pydantic import BaseModel
 from openai import OpenAI
 
-db_path = os.path.join(os.path.dirname(__file__), "mvp/mail_app/mail.sqlite")
+db_path = os.path.join(os.path.dirname(__file__), "mail.sqlite")
 con = sqlite3.connect(db_path)
 cur = con.cursor()
 

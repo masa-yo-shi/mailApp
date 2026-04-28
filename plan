@@ -20,3 +20,11 @@ MVP策定
 
 メール→データベース→AIで読み込む（chatgpt）→分類→出力
 画面　バイト・バイト以外で表示させる。
+
+データベース→chatpP（in：件名　プロンプト：件名をbaito, tosyokan, othersに分類して out: baito, tosyokan, others）→データベース
+
+categoryカラムを追加
+件名を取り出す関数を書く。
+inとoutを指定したgptモデルをコーディング
+outをデータベースに追加する関数を書く。
+データベースのcategoryでフィルタリングしてuiに反映させる。
