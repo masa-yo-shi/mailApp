@@ -11,6 +11,9 @@ SCOPES = ["https://www.googleapis.com/auth/gmail.readonly"]
 
 BASE_DIR = os.path.dirname(__file__)
 DB_NAME = os.path.join(BASE_DIR, "mail.sqlite")
+
+# These files are intentionally NOT committed for public releases.
+# Provide them locally to use Gmail sync.
 TOKEN_PATH = os.path.join(BASE_DIR, "token.json")
 CREDENTIALS_PATH = os.path.join(BASE_DIR, "credentials.json")
 

@@ -1,0 +1,21 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+
+# Virtual env
+.venv/
+
+# Local env
+.env
+.env.*
+
+# OAuth/Gmail local creds (DO NOT COMMIT)
+mvp/mail_app/credentials.json
+mvp/mail_app/token.json
+
+# Local SQLite DB (generated on startup)
+mvp/mail_app/mail.sqlite
+
+# Editor
+.vscode/

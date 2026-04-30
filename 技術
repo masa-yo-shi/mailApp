@@ -9,3 +9,13 @@ MailSchema、mail_id、int、必須、ID、123、なし
 ResponseSchema、message、str、必須、API操作の結果、メールの表示に成功、なし
 
 
+公開用の実行手順（サンプルDBで起動）
+1) python3 -m venv .venv && source .venv/bin/activate
+2) pip install -r requirements.txt
+3) cd mvp/mail_app
+4) uvicorn main:app --reload --port 8000
+5) http://localhost:8000/mails でサンプルデータが返ることを確認
+
+Gmail同期を使う場合
+- mvp/mail_app/credentials.example.json を参考に credentials.json を配置
+- 初回実行で token.json が生成されます（git管理しない）
