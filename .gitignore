@@ -11,11 +11,19 @@ __pycache__/
 .env.*
 
 # OAuth/Gmail local creds (DO NOT COMMIT)
-mvp/mail_app/credentials.json
-mvp/mail_app/token.json
+# Current layout
+credentials.json
+token.json
+# Legacy layout
+backend/credentials.json
+backend/token.json
 
 # Local SQLite DB (generated on startup)
-mvp/mail_app/mail.sqlite
+mail.sqlite
+*.sqlite
+*.sqlite3
+# Legacy layout
+backend/mail.sqlite
 
 # Editor
 .vscode/
