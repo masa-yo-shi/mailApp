@@ -23,6 +23,10 @@ class MailSchema(BaseModel):
         class Config:
             orm_mode = True
 
+class MailResponseSchema(BaseModel):
+    id : int = Field(..., description="id of the mail response")
+    response_title: str = Field(default="", description="title of the mail response")
+    response_description: str = Field(default="", description="description of the mail response")
 
 class ResponseSchema(BaseModel):
     message: str = Field(default="", description="result of the operation")
