@@ -71,10 +71,24 @@ def _sample_mails():
     ]
 
 
+def _sample_users():
+    from models.mail import User
+    from pwdlib import PasswordHash
+
+    password_hash = PasswordHash.recommended()
+
+    return [
+        User(
+            username="johndoe",
+            password_hash=password_hash.hash("secret"),
+        )
+    ]
+
+
 async def init_db(*, seed_sample: bool = True, reset: bool = False) -> None:
     """Create tables and optionally seed sample data."""
 
-    from models.mail import Mail
+    from models.mail import Mail, User
 
     async with engine.begin() as conn:
         if reset:
@@ -90,4 +104,10 @@ async def init_db(*, seed_sample: bool = True, reset: bool = False) -> None:
         ).scalar_one()
         if count == 0:
             session.add_all(_sample_mails())
+        user_count = (
+            await session.execute(select(func.count()).select_from(User))
+        ).scalar_one()
+        if user_count == 0:
+            session.add_all(_sample_users())
+        if count == 0 or user_count == 0:
             await session.commit()

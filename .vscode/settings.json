@@ -1,3 +1,7 @@
 {
-    "python-envs.defaultEnvManager": "ms-python.python:venv"
+    "python-envs.defaultEnvManager": "ms-python.python:venv",
+    "python.terminal.executeInFileDir": true,
+    "python.terminal.useEnvFile": true,
+    "python.terminal.envFile": "${workspaceFolder}/.env"
+
 }

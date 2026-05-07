@@ -9,6 +9,8 @@ __pycache__/
 # Local env
 .env
 .env.*
+*.key
+*.pem
 
 # OAuth/Gmail local creds (DO NOT COMMIT)
 # Current layout

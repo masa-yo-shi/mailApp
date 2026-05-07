@@ -17,7 +17,7 @@ res = cur.execute("SELECT title, id FROM mails WHERE category = 'inbox'")
 
 
 class ClassifiedTitle(BaseModel):
-    category: Literal["バイト", "図書館", "その他"]
+    category: Literal["製造", "営業", "その他"]
     id: int
 
 
@@ -46,7 +46,7 @@ try:
         instructions="""
 あなたはタイトル分類器です。
 次のカテゴリのどれか1つだけを返してください:
-バイト, 図書館, その他
+製造, 営業, その他
 
 入力形式：[{'title': '...', 'id': 1}, ...]
 出力形式：{"items": [{"category": "...", "id": 1}, ...]}
