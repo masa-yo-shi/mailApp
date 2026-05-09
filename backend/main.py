@@ -5,7 +5,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
 import db
-from routers.mail import router as mail_router
+from routers.mail import auth_router, router as mail_router
 
 
 @asynccontextmanager
@@ -27,6 +27,7 @@ app.add_middleware(
 )
 
 app.include_router(mail_router)
+app.include_router(auth_router)
 
 
 @app.exception_handler(RequestValidationError)

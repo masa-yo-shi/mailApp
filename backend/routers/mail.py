@@ -17,6 +17,7 @@ from auth import (
 
 
 router = APIRouter(tags=["mails"], prefix="/mails")
+auth_router = APIRouter(tags=["auth"])
 
 # メールの取得
 @router.get("/", response_model=list[MailSchema])
@@ -29,7 +30,7 @@ async def response_mail(mail:MailResponseSchema, db:AsyncSession= Depends(db.get
     response = await mail_cruds.response_mail(db, mail)
     return ResponseSchema(message=f"Mail response created with id {response.id}")
 
-@router.post("/token")
+@auth_router.post("/token")
 async def login_for_access_token(
     form_data: Annotated[OAuth2PasswordRequestForm, Depends()],
     db_session: AsyncSession = Depends(db.get_dbsession),

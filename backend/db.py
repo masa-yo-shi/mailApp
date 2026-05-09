@@ -21,6 +21,42 @@ async def get_dbsession():
         yield session
 
 
+async def init_db(*, seed_sample: bool, reset: bool) -> None:
+    """Create tables and (optionally) seed sample data.
+
+    Notes:
+    - Keep this logic out of module top-level to avoid circular-import issues.
+    - Uses AsyncEngine/AsyncSession consistently.
+    """
+
+    # Ensure all models are imported and registered on Base.metadata
+    import models.mail  # noqa: F401
+
+    async with engine.begin() as conn:
+        if reset:
+            await conn.run_sync(Base.metadata.drop_all)
+        await conn.run_sync(Base.metadata.create_all)
+
+    if not seed_sample:
+        return
+
+    from models.mail import Mail, User
+
+    async with async_session() as session:
+        mail_count = await session.scalar(select(func.count(Mail.id)))
+        user_count = await session.scalar(select(func.count(User.id)))
+
+        to_add = []
+        if (mail_count or 0) == 0:
+            to_add.extend(_sample_mails())
+        if (user_count or 0) == 0:
+            to_add.extend(_sample_users())
+
+        if to_add:
+            session.add_all(to_add)
+            await session.commit()
+
+
 def _sample_mails():
     # Import here to avoid import cycles (models import Base from this module)
     from models.mail import Mail
@@ -81,33 +117,9 @@ def _sample_users():
         User(
             username="johndoe",
             password_hash=password_hash.hash("secret"),
-        )
+        ),
+        User(
+            username="testuser",
+            password_hash=password_hash.hash("testpassword"),
+        ),
     ]
-
-
-async def init_db(*, seed_sample: bool = True, reset: bool = False) -> None:
-    """Create tables and optionally seed sample data."""
-
-    from models.mail import Mail, User
-
-    async with engine.begin() as conn:
-        if reset:
-            await conn.run_sync(Base.metadata.drop_all)
-        await conn.run_sync(Base.metadata.create_all)
-
-    if not seed_sample:
-        return
-
-    async with async_session() as session:
-        count = (
-            await session.execute(select(func.count()).select_from(Mail))
-        ).scalar_one()
-        if count == 0:
-            session.add_all(_sample_mails())
-        user_count = (
-            await session.execute(select(func.count()).select_from(User))
-        ).scalar_one()
-        if user_count == 0:
-            session.add_all(_sample_users())
-        if count == 0 or user_count == 0:
-            await session.commit()

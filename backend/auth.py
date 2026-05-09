@@ -4,7 +4,7 @@ from typing import Annotated
 import jwt
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
-from jwt.exceptions import InvalidTokenError
+from jwt.exceptions import PyJWTError
 from pwdlib import PasswordHash
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -17,7 +17,7 @@ SECRET_KEY = "your_secret_key"
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/mails/token")
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/token")
 
 password_hash = PasswordHash.recommended()
 DUMMY_HASH = password_hash.hash("dummypassword")
@@ -84,7 +84,7 @@ async def get_current_user(
         if username is None:
             raise credentials_exception
         token_data = TokenData(username=username)
-    except InvalidTokenError:
+    except PyJWTError:
         raise credentials_exception
     user = await get_user(db_session, username=token_data.username)
     if user is None:
