@@ -10,14 +10,14 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 import db
 from cruds.user import get_user_by_username
-from schemas.mail import TokenData, User, UserInDB
+from schemas.mail import TokenData, User
 
 
 SECRET_KEY = "your_secret_key"
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/token")
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/login")
 
 password_hash = PasswordHash.recommended()
 DUMMY_HASH = password_hash.hash("dummypassword")
@@ -30,32 +30,16 @@ def verify_password(plain_password, hashed_password):
 def get_password_hash(password):
     return password_hash.hash(password)
 
-
-async def get_user(db_session: AsyncSession, username: str) -> UserInDB | None:
+async def get_user(db_session: AsyncSession, username: str) -> User | None:
     db_user = await get_user_by_username(db_session, username)
     if db_user is None:
         return None
-    return UserInDB(
+    return User(
+        id=db_user.id,
         username=db_user.username,
-        email=None,
-        full_name=None,
-        disabled=False,
         hashed_password=db_user.password_hash,
     )
 
-
-async def authenticate_user(
-    db_session: AsyncSession,
-    username: str,
-    password: str,
-) -> UserInDB | bool:
-    user = await get_user(db_session, username)
-    if not user:
-        verify_password(password, DUMMY_HASH)
-        return False
-    if not verify_password(password, user.hashed_password):
-        return False
-    return user
 
 
 def create_access_token(data: dict, expires_delta: timedelta | None = None) -> str:
@@ -89,12 +73,6 @@ async def get_current_user(
     user = await get_user(db_session, username=token_data.username)
     if user is None:
         raise credentials_exception
-    return user
+    return user.id
 
 
-async def get_current_active_user(
-    current_user: Annotated[User, Depends(get_current_user)]
-):
-    if current_user.disabled:
-        raise HTTPException(status_code=400, detail="Inactive user")
-    return current_user

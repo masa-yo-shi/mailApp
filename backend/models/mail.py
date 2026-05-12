@@ -10,7 +10,8 @@ class Mail(Base):
     description = Column(String, nullable=False)
     created_at = Column(DateTime, nullable=False)
     category = Column(String, nullable=True)
-
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    user = relationship("User", back_populates="mails")
     response = relationship("MailResponse", back_populates="mail", uselist=False)
 
 class MailResponse(Base):
@@ -28,3 +29,4 @@ class User(Base):
     id = Column(Integer, primary_key=True, index=True)
     username = Column(String, unique=True, nullable=False)
     password_hash = Column(String, nullable=False)
+    mails = relationship("Mail", back_populates="user")

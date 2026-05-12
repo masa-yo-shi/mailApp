@@ -14,3 +14,13 @@ CRUD処理
 5/9
 ユーザー認証機能
 メール分類エンドポイント作成
+
+/auth/register
+/auth/login
+/auth/logout
+/auth/me
+/emails
+/emails/{id}
+/emails/{id}/classify
+/emails/{id}/summary
+/emails/{id}/reply-draft

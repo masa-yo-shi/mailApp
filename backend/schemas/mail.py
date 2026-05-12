@@ -16,6 +16,7 @@ class MailSchema(BaseModel):
     description: str = Field(default="", description="description of the mail")
     created_at: datetime = Field(..., description="created time")
     category: str | None = Field(default=None, description="category of the mail")
+    user_id: int = Field(..., description="id of the user who created the mail")
 
     if ConfigDict is not None:
         model_config = ConfigDict(from_attributes=True)
@@ -39,10 +40,7 @@ class TokenData(BaseModel):
     username: str | None = None
 
 class User(BaseModel):
-    username: str
-    email: str | None = None
-    full_name: str | None = None
-    disabled: bool | None = None
-
-class UserInDB(User):
+    id : int = Field(..., description="id of the user")
+    username: str = Field(..., description="username of the user")
     hashed_password: str
+
