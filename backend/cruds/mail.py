@@ -26,6 +26,24 @@ async def get_mails_by_user_id(db: AsyncSession, user_id: int) -> list[mail_mode
     mails = result.scalars().all()
     return mails
 
+async def get_mails_by_category(db: AsyncSession, user_id: int, mail_category: str) -> list[mail_models.Mail]:
+    """
+    Args:
+        db (AsyncSession): 非同期セッション
+        user_id (int): ユーザーID
+        mail_category (str): メールのカテゴリ
+    Returns:
+        list[Mail]: ユーザーのメールのリスト
+    """
+    if mail_category not in ["営業", "製造", "その他"]:
+        raise ValueError("Invalid mail category")
+    result = await db.execute(select(mail_models.Mail).where(
+        mail_models.Mail.user_id == user_id,
+        mail_models.Mail.category == mail_category
+    ))
+    mails = result.scalars().all()
+    return mails
+
 async def response_mail(
     db: AsyncSession,
     mail: mail_schemas.MailResponseSchema,

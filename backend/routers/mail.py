@@ -15,7 +15,7 @@ from auth import (
 
 
 
-router = APIRouter(tags=["mails"], prefix="/mails")
+router = APIRouter()
 auth_router = APIRouter(tags=["auth"])
 
 
@@ -31,10 +31,22 @@ async def login_for_access_token(
     return Token(access_token=access_token, token_type="bearer")
 
 
-@router.get("/users/me/mails/")
+@router.get("/mails")
 async def read_user_mails(
     user_id: Annotated[int, Depends(get_current_user)],
     db_session: AsyncSession = Depends(db.get_dbsession)
 ) -> list[MailSchema]:
     mails = await mail_cruds.get_mails_by_user_id(db_session, user_id)
+    return mails
+
+@router.get("/mails/{mail_category}")
+async def read_user_mails_by_category(
+    mail_category: str,
+    user_id: Annotated[int, Depends(get_current_user)],
+    db_session: AsyncSession = Depends(db.get_dbsession)
+) -> list[MailSchema]:
+    try:
+        mails = await mail_cruds.get_mails_by_category(db_session, user_id, mail_category)
+    except ValueError as exc:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(exc)) from exc
     return mails
