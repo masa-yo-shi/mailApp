@@ -39,8 +39,25 @@ class Token(BaseModel):
 class TokenData(BaseModel):
     username: str | None = None
 
-class User(BaseModel):
-    id : int = Field(..., description="id of the user")
+class UserPublic(BaseModel):
+    id: int = Field(..., description="id of the user")
+    username: str = Field(..., description="username of the user")
+
+    if ConfigDict is not None:
+        model_config = ConfigDict(from_attributes=True)
+    else:
+        class Config:
+            orm_mode = True
+
+
+class UserInDB(BaseModel):
+    id: int = Field(..., description="id of the user")
     username: str = Field(..., description="username of the user")
     hashed_password: str
+
+    if ConfigDict is not None:
+        model_config = ConfigDict(from_attributes=True)
+    else:
+        class Config:
+            orm_mode = True
 

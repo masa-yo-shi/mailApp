@@ -1,10 +1,12 @@
-import { Routes, Route } from 'react-router-dom'
+import { Routes, Route, useNavigate } from 'react-router-dom'
 import { useEffect, useState } from 'react'
+import Login from './pages/login'
 
-const apiURL = 'http://localhost:8000/mails/'
+const apiBase = import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:8000'
+const apiURL = `${apiBase}/mails`
 
 function MailList() {
-
+  const navigate = useNavigate()
   const [mails, setMails] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
@@ -12,8 +14,23 @@ function MailList() {
 
   useEffect(() => {
     const fetchMails = async () => {
+      setLoading(true)
+      setError('')
       try {
-        const response = await fetch(apiURL)
+        const url = new URL(apiURL)
+
+        if (selectedCategory) {
+          url.searchParams.set('mail_category', selectedCategory)
+        }
+
+        const response = await fetch(url.toString(), {
+          credentials: 'include',
+        })
+
+        if (response.status === 401) {
+          navigate('/login', { replace: true })
+          return
+        }
 
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`)
@@ -33,19 +50,15 @@ function MailList() {
     }
 
     fetchMails()
-  }, [])
-
-  const filterMailsByCategory = (category: string) => {
-    return mails.filter((mail) => mail.category === category)
-  }
+  }, [selectedCategory, navigate])
 
   return (
   <div>
     <header className="App-header">
       <h1>メール分類アプリ</h1>
       <div className="category">
-        <button onClick={() => setSelectedCategory('バイト')}>バイト</button>
-        <button onClick={() => setSelectedCategory('図書館')}>図書館</button>
+        <button onClick={() => setSelectedCategory('営業')}>営業</button>
+        <button onClick={() => setSelectedCategory('製造')}>製造</button>
         <button onClick={() => setSelectedCategory('その他')}>その他</button>
       </div>
     </header>
@@ -63,7 +76,7 @@ function MailList() {
             </tr>
           </thead>
           <tbody>
-            {filterMailsByCategory(selectedCategory).map((mail) => (
+            {mails.map((mail) => (
               <tr key={mail.id}>
                 <td>{mail.title}</td>
                 <td>{mail.description}</td>
@@ -82,6 +95,8 @@ function App() {
   return (
     <Routes>
       <Route path="/" element={<MailList />} />
+      <Route path="/login" element={<Login />} />
+
     </Routes>
   )
 }

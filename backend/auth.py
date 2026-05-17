@@ -1,8 +1,9 @@
+import os
 from datetime import datetime, timedelta, timezone
 from typing import Annotated
 
 import jwt
-from fastapi import Depends, HTTPException, status
+from fastapi import Depends, HTTPException, Request, status
 from fastapi.security import OAuth2PasswordBearer
 from jwt.exceptions import PyJWTError
 from pwdlib import PasswordHash
@@ -10,14 +11,22 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 import db
 from cruds.user import get_user_by_username
-from schemas.mail import TokenData, User
+from schemas.mail import TokenData, UserInDB
 
 
-SECRET_KEY = "your_secret_key"
-ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 30
+# SECRET_KEY = os.getenv("SECRET_KEY")
+SECRET_KEY = "test-secret"
+if not SECRET_KEY:
+    raise RuntimeError("SECRET_KEY is not set")
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/login")
+ALGORITHM = os.getenv("JWT_ALGORITHM", "HS256")
+ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", "30"))
+
+COOKIE_NAME = os.getenv("AUTH_COOKIE_NAME", "access_token")
+COOKIE_SECURE = os.getenv("AUTH_COOKIE_SECURE", "false").lower() == "true"
+COOKIE_SAMESITE = os.getenv("AUTH_COOKIE_SAMESITE", "lax")
+
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/login", auto_error=False)
 
 password_hash = PasswordHash.recommended()
 DUMMY_HASH = password_hash.hash("dummypassword")
@@ -30,11 +39,11 @@ def verify_password(plain_password, hashed_password):
 def get_password_hash(password):
     return password_hash.hash(password)
 
-async def get_user(db_session: AsyncSession, username: str) -> User | None:
+async def get_user(db_session: AsyncSession, username: str) -> UserInDB | None:
     db_user = await get_user_by_username(db_session, username)
     if db_user is None:
         return None
-    return User(
+    return UserInDB(
         id=db_user.id,
         username=db_user.username,
         hashed_password=db_user.password_hash,
@@ -53,8 +62,23 @@ def create_access_token(data: dict, expires_delta: timedelta | None = None) -> s
     return encoded_jwt
 
 
+async def authenticate_user(
+    db_session: AsyncSession,
+    username: str,
+    password: str,
+) -> UserInDB | None:
+    user = await get_user(db_session, username)
+    if user is None:
+        verify_password(password, DUMMY_HASH)
+        return None
+    if not verify_password(password, user.hashed_password):
+        return None
+    return user
+
+
 async def get_current_user(
-    token: Annotated[str, Depends(oauth2_scheme)],
+    request: Request,
+    token: Annotated[str | None, Depends(oauth2_scheme)],
     db_session: AsyncSession = Depends(db.get_dbsession),
 ):
     credentials_exception = HTTPException(
@@ -62,8 +86,12 @@ async def get_current_user(
         detail="Could not validate credentials",
         headers={"WWW-Authenticate": "Bearer"},
     )
+    raw_token = token or request.cookies.get(COOKIE_NAME)
+    if not raw_token:
+        raise credentials_exception
+
     try:
-        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        payload = jwt.decode(raw_token, SECRET_KEY, algorithms=[ALGORITHM])
         username = payload.get("sub")
         if username is None:
             raise credentials_exception

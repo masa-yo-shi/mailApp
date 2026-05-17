@@ -1,26 +1,38 @@
-完成像
+# Mail Classifier
 
-・返信自動作成（テンプレ付き）
-・一文要約
+メールをカテゴリ別に一覧表示し、ログイン後に自分のメールだけを閲覧できるシンプルなWebアプリです。バックエンドはFastAPI、フロントエンドはVite + Reactで構成されています。
 
-機能追加手順
+## 使い始める手順
 
-モデルの策定
-スキーマの変更
-CRUD処理
-データベース処理
-ルーティング処理
+### 1) バックエンド起動
 
-5/9
-ユーザー認証機能
-メール分類エンドポイント作成
+```bash
+cd backend
+python -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
 
-/auth/register
-/auth/login
-/auth/logout
-/auth/me
-/emails
-/emails/{id}
-/emails/{id}/classify
-/emails/{id}/summary
-/emails/{id}/reply-draft
+export SECRET_KEY=your-secret-key
+export ALLOWED_ORIGINS=http://localhost:5173
+
+uvicorn main:app --reload
+```
+
+### 2) フロントエンド起動
+
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+### 3) ログイン
+
+初期データが入っている場合、以下のユーザーでログインできます。
+
+- johndoe / secret
+- testuser / testpassword
+
+ブラウザで http://localhost:5173 にアクセスしてください。
+
+

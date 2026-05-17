@@ -12,3 +12,12 @@ async def get_user_by_username(
         select(mail_models.User).where(mail_models.User.username == username)
     )
     return result.scalars().first()
+
+async def post_user(
+    db: AsyncSession,
+    user: mail_models.User
+):
+    db.add(user)
+    await db.commit()
+    await db.refresh(user)
+    return user

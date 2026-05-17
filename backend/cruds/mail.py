@@ -68,4 +68,12 @@ async def response_mail(
 
     return response
 
+async def get_user_by_username(
+        db : AsyncSession,
+        username: str,
+) -> mail_models.User | None:
+    result = await db.execute(
+         select(mail_models.User).where(mail_models.User.username == username)      
+)
+
 
