@@ -182,3 +182,121 @@
     border-right-color: var(--border);
   }
 }
+
+.App {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  padding: 0 32px 40px;
+  text-align: left;
+
+  @media (max-width: 1024px) {
+    padding: 0 20px 32px;
+  }
+}
+
+.mail-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+}
+
+.mail-table th,
+.mail-table td {
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--border);
+  text-align: left;
+}
+
+.mail-table th {
+  font-size: 14px;
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+  color: var(--text);
+  background: var(--code-bg);
+}
+
+.mail-table tr:last-child td {
+  border-bottom: none;
+}
+
+.mail-table tr.is-selected td {
+  background: rgba(170, 59, 255, 0.08);
+}
+
+.mail-title-button {
+  background: transparent;
+  border: none;
+  padding: 0;
+  font: inherit;
+  color: var(--text-h);
+  cursor: pointer;
+  text-align: left;
+}
+
+.mail-title-button:hover {
+  text-decoration: underline;
+}
+
+.mail-title-button:focus-visible {
+  text-decoration: underline;
+  box-shadow: 0 0 0 2px var(--accent);
+  border-radius: 4px;
+}
+
+.mail-detail {
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 20px 24px;
+  background: var(--code-bg);
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.mail-detail-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.mail-detail-label {
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  color: var(--text);
+}
+
+.mail-detail-title {
+  margin: 6px 0 0;
+}
+
+.mail-detail-meta {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 6px;
+  font-size: 14px;
+  color: var(--text);
+}
+
+.mail-detail-tag {
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: var(--accent-bg);
+  color: var(--text-h);
+  font-size: 13px;
+}
+
+.mail-detail-body {
+  white-space: pre-wrap;
+  color: var(--text-h);
+}
+
+.mail-detail-empty {
+  color: var(--text);
+}

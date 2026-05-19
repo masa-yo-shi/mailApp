@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException, Response, status
 from sqlalchemy.ext.asyncio import AsyncSession
-from schemas.mail import MailSchema, ResponseSchema, UserPublic
+from schemas.mail import MailSchema, MailResponseSchema, ResponseSchema, UserPublic
 import cruds.mail as mail_cruds
 import cruds.user as user_cruds
 import db
@@ -99,3 +99,33 @@ async def read_user_mails_by_category(
         except ValueError as exc:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(exc)) from exc
         return mails
+
+@router.get("/mails/{mail_id}", response_model=MailSchema)
+async def get_mail_by_id(
+    mail_id: int,
+    user_id: Annotated[int, Depends(get_current_user)],
+    db_session: AsyncSession = Depends(db.get_dbsession)
+) -> MailSchema:
+    try:
+        mail = await mail_cruds.get_mail_by_id(db_session, mail_id, user_id)
+    except ValueError as exc:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(exc)) from exc
+    return mail
+
+@router.post("/mails/{mail_id}/response", response_model=ResponseSchema)
+async def response_mail(
+    mail_id: int,
+    mail_response: MailResponseSchema,
+    user_id: Annotated[int, Depends(get_current_user)],
+    db_session: AsyncSession = Depends(db.get_dbsession)
+) -> ResponseSchema:
+    if hasattr(mail_response, "model_copy"):
+        resolved_response = mail_response.model_copy(update={"id": mail_id})
+    else:
+        resolved_response = mail_response.copy(update={"id": mail_id})
+
+    try:
+        await mail_cruds.response_mail(db_session, resolved_response)
+    except ValueError as exc:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(exc)) from exc
+    return ResponseSchema(message="ok")

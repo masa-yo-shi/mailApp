@@ -94,25 +94,6 @@ function Login() {
                         </button>
                     </form>
                 </div>
-
-                <div className="login-aside">
-                    <div className="login-badge">Secure Mail Hub</div>
-                    <h2>ひと目で分かる分類体験</h2>
-                    <p>
-                        重要なメールだけを先に確認。カテゴリ別に整理された受信箱で、
-                        返信のスピードを高めます。
-                    </p>
-                    <div className="login-metrics">
-                        <div>
-                            <span>分類速度</span>
-                            <strong>3.2x</strong>
-                        </div>
-                        <div>
-                            <span>対応漏れ</span>
-                            <strong>0件</strong>
-                        </div>
-                    </div>
-                </div>
             </div>
         </div>
     )

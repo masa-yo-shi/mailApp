@@ -25,7 +25,7 @@ class MailSchema(BaseModel):
             orm_mode = True
 
 class MailResponseSchema(BaseModel):
-    id : int = Field(..., description="id of the mail response")
+    id: int | None = Field(default=None, description="id of the mail response")
     response_title: str = Field(default="", description="title of the mail response")
     response_description: str = Field(default="", description="description of the mail response")
 
