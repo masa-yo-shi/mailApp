@@ -58,7 +58,7 @@ function Login() {
             <div className="login-shell">
                 <div className="login-panel">
                     <header>
-                        <h1>Mail Classifier</h1>
+                        <h2>Mail Classifier</h2>
                     </header>
                     <p className="login-subtitle">
                         受信メールの整理を続けるにはログインしてください。

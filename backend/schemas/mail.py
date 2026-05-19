@@ -71,7 +71,7 @@ class UserPublic(BaseModel):
 class UserInDB(BaseModel):
     id: int = Field(..., description="id of the user")
     username: str = Field(..., description="username of the user")
-    hashed_password: str
+    hashed_password: str = Field(..., description="hashed password of the user")
 
     if ConfigDict is not None:
         model_config = ConfigDict(from_attributes=True)
