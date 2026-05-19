@@ -2,6 +2,7 @@ import { Routes, Route, useNavigate } from 'react-router-dom'
 import { useEffect, useMemo, useState } from 'react'
 import Login from './pages/login'
 import Maildetail from './pages/description'
+import './App.css'
 
 const apiBase = import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:8000'
 const apiURL = `${apiBase}/mails`

@@ -14,6 +14,9 @@
   --accent-strong: #1f5fa8;
   --accent-bg: rgba(47, 125, 211, 0.12);
   --accent-border: rgba(47, 125, 211, 0.4);
+  --danger: #b23030;
+  --danger-bg: #fdeceb;
+  --danger-border: #f8c8c6;
   --social-bg: rgba(237, 246, 254, 0.8);
   --shadow: 0 12px 30px rgba(20, 46, 84, 0.08);
 
@@ -96,3 +99,4 @@ code {
   padding: 4px 8px;
   background: var(--code-bg);
 }
+
