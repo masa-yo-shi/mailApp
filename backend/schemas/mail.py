@@ -29,6 +29,24 @@ class MailResponseSchema(BaseModel):
     response_title: str = Field(default="", description="title of the mail response")
     response_description: str = Field(default="", description="description of the mail response")
 
+class MailReplyTemplateSchema(BaseModel):
+    id: int | None = Field(default=None, description="id of the mail reply template")
+    user_id: int = Field(..., description="id of the user who created the template")
+    template_name: str = Field(default="", description="name of the mail reply template")
+    template_title: str = Field(default="", description="title of the mail reply template")
+    template_description: str = Field(default="", description="description of the mail reply template")
+
+    if ConfigDict is not None:
+        model_config = ConfigDict(from_attributes=True)
+    else:
+        class Config:
+            orm_mode = True
+
+class MailReplyTemplateCreate(BaseModel):
+    template_name: str = Field(default="", description="name of the mail reply template")
+    template_title: str = Field(default="", description="title of the mail reply template")
+    template_description: str = Field(default="", description="description of the mail reply template")
+
 class ResponseSchema(BaseModel):
     message: str = Field(default="", description="result of the operation")
 

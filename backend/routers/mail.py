@@ -1,6 +1,13 @@
 from fastapi import APIRouter, Depends, HTTPException, Response, status
 from sqlalchemy.ext.asyncio import AsyncSession
-from schemas.mail import MailSchema, MailResponseSchema, ResponseSchema, UserPublic
+from schemas.mail import (
+    MailReplyTemplateCreate,
+    MailReplyTemplateSchema,
+    MailSchema,
+    MailResponseSchema,
+    ResponseSchema,
+    UserPublic,
+)
 import cruds.mail as mail_cruds
 import cruds.user as user_cruds
 import db
@@ -111,6 +118,63 @@ async def get_mail_by_id(
     except ValueError as exc:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(exc)) from exc
     return mail
+
+@router.get("/mail-reply-templates", response_model=list[MailReplyTemplateSchema])
+async def get_mail_reply_templates(
+    user_id: Annotated[int, Depends(get_current_user)],
+    db_session: AsyncSession = Depends(db.get_dbsession)
+) -> list[MailReplyTemplateSchema]:
+    templates = await mail_cruds.get_response_templates(db_session, user_id)
+    return templates
+
+@router.post("/mail-reply-templates", response_model=MailReplyTemplateSchema)
+async def create_mail_reply_template(
+    template: MailReplyTemplateCreate,
+    user_id: Annotated[int, Depends(get_current_user)],
+    db_session: AsyncSession = Depends(db.get_dbsession)
+) -> MailReplyTemplateSchema:
+    trimmed_name = template.template_name.strip()
+    trimmed_title = template.template_title.strip()
+    trimmed_description = template.template_description.strip()
+
+    if not trimmed_name:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Template name is required",
+        )
+
+    if not trimmed_title and not trimmed_description:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Template title or description is required",
+        )
+
+    if hasattr(template, "model_copy"):
+        resolved_template = template.model_copy(
+            update={
+                "template_name": trimmed_name,
+                "template_title": trimmed_title,
+                "template_description": trimmed_description,
+            }
+        )
+    else:
+        resolved_template = template.copy(
+            update={
+                "template_name": trimmed_name,
+                "template_title": trimmed_title,
+                "template_description": trimmed_description,
+            }
+        )
+
+    try:
+        created_template = await mail_cruds.create_response_template(
+            db_session,
+            user_id,
+            resolved_template,
+        )
+    except ValueError as exc:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(exc)) from exc
+    return created_template
 
 @router.post("/mails/{mail_id}/response", response_model=ResponseSchema)
 async def response_mail(

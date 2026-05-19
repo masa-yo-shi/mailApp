@@ -49,8 +49,6 @@ async def get_user(db_session: AsyncSession, username: str) -> UserInDB | None:
         hashed_password=db_user.password_hash,
     )
 
-
-
 def create_access_token(data: dict, expires_delta: timedelta | None = None) -> str:
     to_encode = data.copy()
     if expires_delta:

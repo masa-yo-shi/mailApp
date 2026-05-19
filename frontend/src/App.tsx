@@ -98,36 +98,38 @@ function MailList() {
         {loading && <p>Loading...</p>}
         {error && <p role="alert">{error}</p>}
         {!loading && !error && (
-          <table className="mail-table" aria-label="受信メール一覧">
-            <thead>
-              <tr>
-                <th scope="col">件名</th>
-                <th scope="col">作成日時</th>
-                <th scope="col">カテゴリ</th>
-              </tr>
-            </thead>
-            <tbody>
-              {mails.map((mail) => (
-                <tr
-                  key={mail.id}
-                  className={mail.id === selectedMailId ? 'is-selected' : ''}
-                >
-                  <td>
-                    <button
-                      type="button"
-                      className="mail-title-button"
-                      onClick={() => handleMailClick(mail)}
-                      aria-current={mail.id === selectedMailId ? 'true' : undefined}
-                    >
-                      {mail.title}
-                    </button>
-                  </td>
-                  <td>{formatDateTime(mail.created_at)}</td>
-                  <td>{mail.category ?? '-'}</td>
+          <div className="mail-table-wrap">
+            <table className="mail-table" aria-label="受信メール一覧">
+              <thead>
+                <tr>
+                  <th scope="col">件名</th>
+                  <th scope="col">作成日時</th>
+                  <th scope="col">カテゴリ</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {mails.map((mail) => (
+                  <tr
+                    key={mail.id}
+                    className={mail.id === selectedMailId ? 'is-selected' : ''}
+                  >
+                    <td>
+                      <button
+                        type="button"
+                        className="mail-title-button"
+                        onClick={() => handleMailClick(mail)}
+                        aria-current={mail.id === selectedMailId ? 'true' : undefined}
+                      >
+                        {mail.title}
+                      </button>
+                    </td>
+                    <td>{formatDateTime(mail.created_at)}</td>
+                    <td>{mail.category ?? '-'}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         )}
 
       {!loading && !error && (

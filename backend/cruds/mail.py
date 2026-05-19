@@ -68,6 +68,51 @@ async def response_mail(
 
     return response
 
+async def get_mail_by_id(
+    db: AsyncSession,
+    mail_id: int,
+    user_id: int,
+) -> mail_models.Mail:
+    result = await db.execute(
+        select(mail_models.Mail).where(
+            mail_models.Mail.id == mail_id,
+            mail_models.Mail.user_id == user_id,
+        )
+    )
+    mail = result.scalars().first()
+    if mail is None:
+        raise ValueError("Mail not found")
+    return mail
+
+async def get_response_templates(
+    db: AsyncSession,
+    user_id: int,
+) -> list[mail_models.MailReplyTemplate]:
+    query = select(mail_models.MailReplyTemplate).where(
+        mail_models.MailReplyTemplate.user_id == user_id
+    )
+    result = await db.execute(query)
+    templates = result.scalars().all()
+    return templates
+
+async def create_response_template(
+    db: AsyncSession,
+    user_id: int,
+    template: mail_schemas.MailReplyTemplateCreate,
+) -> mail_models.MailReplyTemplate:
+    new_template = mail_models.MailReplyTemplate(
+        user_id=user_id,
+        template_name=template.template_name,
+        template_title=template.template_title,
+        template_description=template.template_description,
+    )
+
+    db.add(new_template)
+    await db.commit()
+    await db.refresh(new_template)
+
+    return new_template
+
 async def get_user_by_username(
         db : AsyncSession,
         username: str,

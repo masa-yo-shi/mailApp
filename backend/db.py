@@ -132,3 +132,27 @@ def _sample_users():
             password_hash=password_hash.hash("testpassword"),
         ),
     ]
+
+def _sample_templates():
+    from models.mail import MailReplyTemplate
+
+    return [
+        MailReplyTemplate(
+            user_id=1,
+            template_name="見積依頼返信",
+            template_title="Re: 見積依頼ありがとうございます",
+            template_description="見積依頼ありがとうございます。現在確認中です。納期と概算見積がわかり次第、改めてご連絡いたします。",
+        ),
+        MailReplyTemplate(
+            user_id=1,
+            template_name="納期確認返信",
+            template_title="Re: 納期確認ありがとうございます",
+            template_description="納期確認ありがとうございます。現在調整中です。確定次第、改めてご連絡いたします。",
+        ),
+        MailReplyTemplate(
+            user_id=2,
+            template_name="クレーム返信",
+            template_title="Re: クレームについて",
+            template_description="この度はご迷惑をおかけして申し訳ございません。状況を確認の上、早急に対応させていただきます。",
+        ),
+    ]

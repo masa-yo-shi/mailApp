@@ -23,6 +23,17 @@ class MailResponse(Base):
     
     mail = relationship("Mail", back_populates="response", uselist=False)
 
+class MailReplyTemplate(Base):
+    __tablename__ = 'mail_reply_templates'
+
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    template_name = Column(String, nullable=False)
+    template_title = Column(String, nullable=False)
+    template_description = Column(String, nullable=False)
+
+    relationships = relationship("User", back_populates="reply_templates")
+
 class User(Base):
     __tablename__ = 'users'
 
@@ -30,3 +41,4 @@ class User(Base):
     username = Column(String, unique=True, nullable=False)
     password_hash = Column(String, nullable=False)
     mails = relationship("Mail", back_populates="user")
+    reply_templates = relationship("MailReplyTemplate", back_populates="relationships")
